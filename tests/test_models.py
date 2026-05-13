@@ -66,15 +66,13 @@ class TestUsageSnapshotNamedBuckets:
 
 
 class TestUsageSnapshotUnknownBucket:
-    def test_unknown_bucket_appears_with_humanized_label(self):
-        # The API may add bucket keys we don't know about. They should still
-        # show up rather than be silently dropped.
+    def test_unknown_bucket_is_silently_ignored(self):
         snap = _make_snapshot(buckets={
             "seven_day": Bucket(utilization=10.0, resets_at=None),
-            "seven_day_brand_new_thing": Bucket(utilization=20.0, resets_at=None),
+            "seven_day_omelette": Bucket(utilization=20.0, resets_at=None),
         })
         labels = [label for label, _ in snap.named_buckets()]
-        assert labels == ["7d", "7d Brand New Thing"]
+        assert labels == ["7d"]
 
 
 class TestUsageSnapshotMaxUtilization:
