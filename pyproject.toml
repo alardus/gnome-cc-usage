@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cc-usage"
+dynamic = ["version"]
+description = "Linux tray indicator for Claude Code usage percentage"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+]
+
+[project.scripts]
+cc-usage = "cc_usage.app:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "cc_usage.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"cc_usage._resources" = ["icons/*.svg", "desktop/*.desktop"]

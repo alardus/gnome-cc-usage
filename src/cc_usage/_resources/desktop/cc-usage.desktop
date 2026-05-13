@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Claude Code Usage
+Comment=Tray indicator for Claude Code usage
+Exec=cc-usage
+Icon=cc-usage-symbolic
+Categories=Utility;

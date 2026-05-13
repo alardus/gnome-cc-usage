@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Circular gauge arc with warning triangle accent, single-color symbolic -->
+  <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="8" y1="8" x2="8" y2="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Small filled warning triangle in bottom-right corner -->
+  <polygon points="11,14 14,14 12.5,11" fill="currentColor"/>
+</svg>
