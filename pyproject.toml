@@ -8,6 +8,7 @@ dynamic = ["version"]
 description = "Linux tray indicator for Claude Code usage percentage"
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "requests>=2.32",
