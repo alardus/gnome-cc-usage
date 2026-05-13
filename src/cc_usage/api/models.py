@@ -25,9 +25,6 @@ class UsageSnapshot:
     extra_usage_enabled: bool
     fetched_at: datetime
 
-    # Preferred display order + friendly label for known buckets. Unknown
-    # keys not in this map are appended in dict-iteration order with a
-    # humanized fallback label (see _label_for).
     _LABELS: ClassVar[dict[str, str]] = {
         "five_hour": "5h",
         "seven_day": "7d",
@@ -41,30 +38,12 @@ class UsageSnapshot:
         "seven_day_sonnet",
     )
 
-    @staticmethod
-    def _label_for(key: str) -> str:
-        if key in UsageSnapshot._LABELS:
-            return UsageSnapshot._LABELS[key]
-        parts = key.split("_")
-        if len(parts) >= 2 and parts[0] == "seven" and parts[1] == "day":
-            tail = " ".join(p.capitalize() for p in parts[2:])
-            return f"7d {tail}".strip()
-        if len(parts) >= 2 and parts[0] == "five" and parts[1] == "hour":
-            tail = " ".join(p.capitalize() for p in parts[2:])
-            return f"5h {tail}".strip()
-        return " ".join(p.capitalize() for p in parts)
-
     def named_buckets(self) -> list[tuple[str, Bucket]]:
-        result: list[tuple[str, Bucket]] = []
-        seen: set[str] = set()
-        for key in self._ORDER:
-            if key in self.buckets:
-                result.append((self._label_for(key), self.buckets[key]))
-                seen.add(key)
-        for key, bucket in self.buckets.items():
-            if key not in seen:
-                result.append((self._label_for(key), bucket))
-        return result
+        return [
+            (self._LABELS[key], self.buckets[key])
+            for key in self._ORDER
+            if key in self.buckets
+        ]
 
     def max_utilization(self) -> float:
         if not self.buckets:
