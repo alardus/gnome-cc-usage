@@ -123,6 +123,30 @@ def _format_until(dt: datetime | None, now: datetime | None = None) -> str:
     return "in <1m"
 
 
+def _format_remaining_short(dt: datetime | None, now: datetime | None = None) -> str:
+    """Return a compact remaining time for the menubar label, e.g. ``1h23m`` or ``23m``.
+
+    Returns "" if *dt* is None or already in the past.
+    """
+    if dt is None:
+        return ""
+    if now is None:
+        now = datetime.now(tz=timezone.utc)
+    delta = int((dt.astimezone(timezone.utc) - now).total_seconds())
+    if delta <= 0:
+        return ""
+    days, rem = divmod(delta, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes = rem // 60
+    if days > 0:
+        return f"{days}d{hours}h"
+    if hours > 0:
+        return f"{hours}h{minutes:02d}m"
+    if minutes > 0:
+        return f"{minutes}m"
+    return "<1m"
+
+
 # ---------------------------------------------------------------------------
 # Indicator
 # ---------------------------------------------------------------------------
@@ -136,6 +160,7 @@ class Indicator:
         warn_threshold: float = 75.0,
         crit_threshold: float = 90.0,
         show_label: str = "max",
+        show_time_remaining: bool = False,
     ) -> None:
         _require_gtk()  # fail fast with a clear message if GTK not present
 
@@ -145,6 +170,7 @@ class Indicator:
         self._warn = warn_threshold
         self._crit = crit_threshold
         self._show_label = show_label
+        self._show_time_remaining = show_time_remaining
         self._bucket_items: list = []
         self._last_snapshot = None
 
@@ -180,6 +206,10 @@ class Indicator:
         settings_item.connect("activate", self._on_settings_clicked)
         menu.append(settings_item)
 
+        about_item = Gtk.MenuItem(label="About…")
+        about_item.connect("activate", lambda _: self._on_about_clicked())
+        menu.append(about_item)
+
         menu.append(Gtk.SeparatorMenuItem())
 
         quit_item = Gtk.MenuItem(label="Quit")
@@ -192,6 +222,19 @@ class Indicator:
     def _on_settings_clicked(self, _item) -> None:
         if self._on_settings is not None:
             self._on_settings()
+
+    def _on_about_clicked(self) -> None:
+        from cc_usage import __version__
+        dialog = Gtk.AboutDialog()
+        dialog.set_program_name("cc-usage")
+        dialog.set_version(__version__)
+        dialog.set_comments("GNOME tray indicator for Claude Code usage")
+        dialog.set_website("https://github.com/alardus/gnome-cc-usage/releases")
+        dialog.set_website_label("Get latest release on GitHub")
+        dialog.set_license_type(Gtk.License.MIT_X11)
+        dialog.set_logo_icon_name("cc-usage-symbolic")
+        dialog.run()
+        dialog.destroy()
 
     # ------------------------------------------------------------------
     # Public state-update methods
@@ -207,6 +250,7 @@ class Indicator:
         self._warn = float(cfg.ui.warn_threshold)
         self._crit = float(cfg.ui.crit_threshold)
         self._show_label = cfg.ui.show_label
+        self._show_time_remaining = cfg.ui.show_time_remaining
         if self._last_snapshot is not None:
             self.update(self._last_snapshot)
 
@@ -217,13 +261,27 @@ class Indicator:
         buckets = snapshot.named_buckets()
         max_util = snapshot.max_utilization()
 
+        label_util = max_util
+        label_resets_at = None
         if self._show_label == "max":
-            label_util = max_util
+            label_bucket = max(snapshot.buckets.values(), key=lambda b: b.utilization) if snapshot.buckets else None
+            label_resets_at = label_bucket.resets_at if label_bucket else None
         else:
-            bucket = snapshot.buckets.get(self._show_label)
-            label_util = bucket.utilization if bucket else max_util
+            label_bucket = snapshot.buckets.get(self._show_label)
+            if label_bucket:
+                label_util = label_bucket.utilization
+                label_resets_at = label_bucket.resets_at
+            else:
+                label_util = max_util
 
-        self._ind.set_label(f"{int(round(label_util))}%", "100%")
+        if self._show_time_remaining:
+            remaining = _format_remaining_short(label_resets_at)
+            if remaining:
+                self._ind.set_label(f"{int(round(label_util))}%  ↻{remaining}", "100%  ↻23h59m")
+            else:
+                self._ind.set_label(f"{int(round(label_util))}%", "100%")
+        else:
+            self._ind.set_label(f"{int(round(label_util))}%", "100%")
 
         icon = _icon_for(max_util, self._warn, self._crit)
         self._ind.set_icon_full(icon, "icon")

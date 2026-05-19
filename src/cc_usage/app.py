@@ -109,6 +109,7 @@ def main() -> None:
         warn_threshold=float(cfg.ui.warn_threshold),
         crit_threshold=float(cfg.ui.crit_threshold),
         show_label=cfg.ui.show_label,
+        show_time_remaining=cfg.ui.show_time_remaining,
     )
     indicator.set_loading()
 

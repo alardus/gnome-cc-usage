@@ -36,6 +36,7 @@ class UiConfig:
     warn_threshold: int = 75
     crit_threshold: int = 90
     autostart_enabled: bool = False
+    show_time_remaining: bool = False
 
 
 @dataclass
@@ -66,6 +67,7 @@ class Config:
                 warn_threshold=int(ui_raw.get("warn_threshold", 75)),
                 crit_threshold=int(ui_raw.get("crit_threshold", 90)),
                 autostart_enabled=bool(ui_raw.get("autostart_enabled", False)),
+                show_time_remaining=bool(ui_raw.get("show_time_remaining", False)),
             ),
         )
         cfg._path = path
@@ -73,6 +75,7 @@ class Config:
 
     def save(self) -> None:
         autostart_str = "true" if self.ui.autostart_enabled else "false"
+        time_remaining_str = "true" if self.ui.show_time_remaining else "false"
         toml = (
             "[poll]\n"
             f"interval_seconds = {self.poll.interval_seconds}\n"
@@ -84,6 +87,7 @@ class Config:
             f"warn_threshold = {self.ui.warn_threshold}\n"
             f"crit_threshold = {self.ui.crit_threshold}\n"
             f"autostart_enabled = {autostart_str}\n"
+            f"show_time_remaining = {time_remaining_str}\n"
         )
         self._path.parent.mkdir(parents=True, exist_ok=True)
         self._path.write_text(toml)

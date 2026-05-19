@@ -124,6 +124,14 @@ def open_settings_dialog(cfg: "Config") -> None:
     grid.attach(combo_label, 1, row, 1, 1)
     row += 1
 
+    # Show time remaining in menubar label
+    _add_label("Show time remaining:", row)
+    switch_time_remaining = Gtk.Switch()
+    switch_time_remaining.set_active(cfg.ui.show_time_remaining)
+    switch_time_remaining.set_halign(Gtk.Align.START)
+    grid.attach(switch_time_remaining, 1, row, 1, 1)
+    row += 1
+
     # Autostart toggle
     _add_label("Start on login:", row)
     switch_autostart = Gtk.Switch()
@@ -149,6 +157,7 @@ def open_settings_dialog(cfg: "Config") -> None:
         active_label = combo_label.get_active_text()
         if active_label:
             cfg.ui.show_label = active_label
+        cfg.ui.show_time_remaining = switch_time_remaining.get_active()
         cfg.ui.autostart_enabled = switch_autostart.get_active()
         _set_autostart_enabled(cfg.ui.autostart_enabled)
         cfg.save()
