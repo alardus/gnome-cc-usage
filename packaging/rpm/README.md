@@ -21,9 +21,9 @@ make -C packaging/rpm rpm
 
 Outputs land under `packaging/rpm/build/`:
 
-- `build/RPMS/noarch/cc-usage-0.1.0-1.fc44.noarch.rpm` — install with `sudo dnf install ./<path>`
-- `build/SRPMS/cc-usage-0.1.0-1.fc44.src.rpm` — feed to COPR
-- `build/SOURCES/cc-usage-0.1.0.tar.gz` — clean source tarball (from `git archive HEAD`)
+- `build/RPMS/noarch/cc-usage-0.1.1-1.fc44.noarch.rpm` — install with `sudo dnf install ./<path>`
+- `build/SRPMS/cc-usage-0.1.1-1.fc44.src.rpm` — feed to COPR
+- `build/SOURCES/cc-usage-0.1.1.tar.gz` — clean source tarball (from `git archive HEAD`)
 
 The `%check` section runs the test suite during the build, so a build failure
 catches broken tests too.

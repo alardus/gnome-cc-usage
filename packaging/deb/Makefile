@@ -6,7 +6,7 @@
 #   make -C packaging/deb clean
 
 NAME     := cc-usage
-VERSION  := 0.1.0
+VERSION  := 0.1.1
 ARCH     := all
 SPEC_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 ROOT     := $(abspath $(SPEC_DIR)/../..)

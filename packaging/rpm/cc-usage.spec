@@ -1,5 +1,5 @@
 Name:           cc-usage
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Tray indicator for Claude Code usage
 
@@ -83,5 +83,5 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
-* Fri May 08 2026 Alexander Bykov <alardus@gmail.com> - 0.1.0-1
+* Fri May 08 2026 Alexander Bykov <alardus@gmail.com> - 0.1.1-1
 - Initial RPM packaging.
